@@ -89,7 +89,15 @@ pub async fn get_searcher_client_no_auth(
 }
 
 pub async fn create_grpc_channel(url: &str) -> BlockEngineConnectionResult<Channel> {
-    let mut endpoint = Endpoint::from_shared(url.to_string()).expect("invalid url");
+    let mut endpoint = Endpoint::from_shared(url.to_string())
+        .expect("invalid url")
+        .tcp_nodelay(true)
+        .tcp_keepalive(Some(std::time::Duration::from_secs(30)))
+        .keep_alive_timeout(std::time::Duration::from_secs(2))
+        .http2_keep_alive_interval(std::time::Duration::from_secs(5))
+        .http2_adaptive_window(true)
+        .initial_connection_window_size(Some(1 << 20))
+        .initial_stream_window_size(Some(1 << 20));
     if url.starts_with("https") {
         endpoint = endpoint.tls_config(tonic::transport::ClientTlsConfig::new())?;
     }
