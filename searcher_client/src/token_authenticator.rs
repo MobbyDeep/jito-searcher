@@ -8,8 +8,9 @@ use jito_protos::auth::{
     GenerateAuthTokensRequest, RefreshAccessTokenRequest, Role, Token,
 };
 use prost_types::Timestamp;
+use solana_keypair::Keypair;
 use solana_metrics::datapoint_info;
-use solana_sdk::signature::{Keypair, Signer};
+use solana_signer::Signer;
 use tokio::{task::JoinHandle, time::sleep};
 use tonic::{service::Interceptor, transport::Channel, Request, Status};
 

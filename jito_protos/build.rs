@@ -2,7 +2,7 @@ use tonic_build::configure;
 
 fn main() {
     configure()
-        .compile(
+        .compile_protos(
             &[
                 "protos/auth.proto",
                 "protos/block.proto",

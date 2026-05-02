@@ -8,11 +8,15 @@ description = "Wrapper around the generated gRPC. Adds auth and retry semantics.
 futures-util = "0.3.28"
 jito-protos = { path = "../jito_protos" }
 log = "0.4"
-prost-types = "0.12"
-solana-client = "2"
-solana-metrics = "2"
-solana-sdk = "2"
-solana-transaction-status = "2"
+prost-types = "0.13"
+solana-client = "3"
+solana-commitment-config = "3"
+solana-keypair = "3"
+solana-metrics = "3"
+solana-signature = "3"
+solana-signer = "3"
+solana-transaction = { version = "3", features = ["bincode"] }
+solana-transaction-status = "3"
 thiserror = "1.0.40"
 tokio = "1"
-tonic = { version = "0.10", features = [ "tls", "tls-roots", "tls-webpki-roots"] }
+tonic = { version = "0.13", features = [ "tls-ring", "tls-native-roots", "tls-webpki-roots"] }

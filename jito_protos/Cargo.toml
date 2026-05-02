@@ -7,11 +7,12 @@ publish = false
 [dependencies]
 bincode = "1.3.3"
 bytes = "1.4.0"
-prost = "0.12"
-prost-types = "0.12"
-solana-perf = "2"
-solana-sdk = "2"
-tonic = "0.10"
+prost = "0.13"
+prost-types = "0.13"
+solana-packet = "3"
+solana-perf = "3"
+solana-transaction = { version = "3", features = ["bincode"] }
+tonic = "0.13"
 
 [build-dependencies]
-tonic-build = "0.10"
+tonic-build = "0.13"

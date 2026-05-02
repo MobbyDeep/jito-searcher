@@ -18,11 +18,9 @@ use jito_protos::{
 };
 use log::{info, warn};
 use solana_client::nonblocking::rpc_client::RpcClient;
-use solana_sdk::{
-    commitment_config::CommitmentConfig,
-    signature::{Keypair, Signature},
-    transaction::VersionedTransaction,
-};
+use solana_commitment_config::CommitmentConfig;
+use solana_keypair::Keypair;
+use solana_transaction::versioned::VersionedTransaction;
 use thiserror::Error;
 use tokio::time::{self, timeout};
 use tonic::{
@@ -91,7 +89,8 @@ pub async fn get_searcher_client_no_auth(
 pub async fn create_grpc_channel(url: &str) -> BlockEngineConnectionResult<Channel> {
     let mut endpoint = Endpoint::from_shared(url.to_string()).expect("invalid url");
     if url.starts_with("https") {
-        endpoint = endpoint.tls_config(tonic::transport::ClientTlsConfig::new())?;
+        endpoint =
+            endpoint.tls_config(tonic::transport::ClientTlsConfig::new().with_enabled_roots())?;
     }
     Ok(endpoint.connect().await?)
 }
@@ -103,11 +102,11 @@ pub async fn send_bundle_with_confirmation<T>(
     bundle_results_subscription: &mut Streaming<BundleResult>,
 ) -> Result<(), Box<dyn std::error::Error>>
 where
-    T: tonic::client::GrpcService<tonic::body::BoxBody> + Send + 'static + Clone,
+    T: tonic::client::GrpcService<tonic::body::Body> + Send + 'static + Clone,
     T::Error: Into<StdError>,
     T::ResponseBody: Body<Data = Bytes> + Send + 'static,
     <T::ResponseBody as Body>::Error: Into<StdError> + Send,
-    <T as tonic::client::GrpcService<tonic::body::BoxBody>>::Future: std::marker::Send,
+    <T as tonic::client::GrpcService<tonic::body::Body>>::Future: std::marker::Send,
 {
     let result = send_bundle_no_wait(transactions, searcher_client).await?;
 
@@ -273,11 +272,11 @@ pub async fn send_bundle_no_wait<T>(
     searcher_client: &mut SearcherServiceClient<T>,
 ) -> Result<Response<SendBundleResponse>, Status>
 where
-    T: tonic::client::GrpcService<tonic::body::BoxBody> + Send + 'static + Clone,
+    T: tonic::client::GrpcService<tonic::body::Body> + Send + 'static + Clone,
     T::Error: Into<StdError>,
     T::ResponseBody: Body<Data = Bytes> + Send + 'static,
     <T::ResponseBody as Body>::Error: Into<StdError> + Send,
-    <T as tonic::client::GrpcService<tonic::body::BoxBody>>::Future: std::marker::Send,
+    <T as tonic::client::GrpcService<tonic::body::Body>>::Future: std::marker::Send,
 {
     // convert them to packets + send over
     let packets: Vec<_> = transactions
